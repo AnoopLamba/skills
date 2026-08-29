@@ -190,6 +190,41 @@ Do not include irrelevant implementation detail merely because it is available.
 
 The handoff should be **self-contained but bounded**.
 
+### Preserve concrete evidence when summarizing
+
+**Do not generalize away concrete evidence.** A concise handoff is not useful if the next investigator loses the specific observations needed to reproduce or reason about the problem.
+
+When a concrete failure case, error, source, input, output, experiment, or implementation behavior is materially useful, preserve it even when the handoff also states the broader generalized problem.
+
+In particular, preserve when relevant:
+
+- the exact reproduction input or affected entity;
+- exact error messages or status codes;
+- source-by-source or case-by-case outcomes;
+- specific URLs, IDs, filenames, functions, commands, or test names;
+- environment-specific differences;
+- counts, timestamps, versions, or measurements that materially affect interpretation;
+- verified current implementation behavior that prevents the recipient from recommending something the system already does.
+
+Do not replace:
+
+```text
+Official product page → access challenge
+Marketplace listing → HTTP 403
+YouTube video A → captions unavailable
+YouTube video B → access challenge
+```
+
+with only:
+
+> Some sources fail to retrieve.
+
+The generalized statement may be useful, but it should accompany rather than replace the concrete evidence.
+
+Likewise, if the current system has already been verified to retain blocked sources, isolate source failures, preserve provenance, or fail closed, include those facts when they are relevant. Otherwise the recipient may waste time proposing behavior that already exists.
+
+Apply a **minimum sufficient evidence** test: remove detail only when losing it would not materially reduce the recipient's ability to reproduce the issue, distinguish competing explanations, understand the current implementation, or avoid repeating completed investigation.
+
 ## 3. Separate evidence from interpretation
 
 When the distinction matters, classify important information as:
@@ -308,6 +343,8 @@ Example:
 > The retrieval architecture must support heterogeneous public product-research sources. The Cosmic Byte keyboard case below is one reproducible example of the broader issue and must not be treated as the scope of the architecture.
 
 Do not allow the handoff to accidentally turn "This is where we observed the problem" into "This is the only case the solution must support."
+
+Do not move so far in the opposite direction that the concrete case disappears. The broader problem and the reproduction case should normally coexist.
 
 This principle applies equally to one customer revealing a general bug, one website revealing a retrieval limitation, one PDF revealing a parser weakness, one API revealing an architectural issue, one operating system revealing a portability problem, or one product revealing a product-research limitation.
 
@@ -465,6 +502,8 @@ Do not reduce a complex problem to:
 
 Preserve enough evidence and context for the recipient to begin useful investigation without reconstructing the original session.
 
+Do not remove concrete reproduction cases, exact failures, verified implementation behaviors, or completed experiments merely to make the handoff shorter.
+
 ## 14. Protect provenance
 
 When the problem involves external evidence, research, documents, datasets, retrieved content, or source material, preserve provenance.
@@ -497,8 +536,11 @@ Before returning the handoff, verify:
 - Is contradictory evidence retained?
 - Are constraints actual constraints rather than preferred solutions?
 - Is current repository/environment state clear when relevant?
-- Is the reproduction case preserved?
+- Is the concrete reproduction case preserved with enough detail to be useful?
+- Are exact errors, status codes, source-by-source outcomes, IDs, inputs, or measurements retained when they materially affect investigation?
+- Are verified implementation behaviors preserved when omitting them could cause the recipient to recommend behavior that already exists?
 - Is broader scope clear when the example is only one instance?
+- Does the handoff preserve both the generalized problem and the concrete evidence instead of choosing one at the expense of the other?
 - Does the investigation request match the caller's intent?
 - For independent investigation, have unnecessary diagnoses, preferred solutions, and search directions been removed?
 - For directed investigation, is the requested hypothesis clearly labeled rather than treated as fact?
