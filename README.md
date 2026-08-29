@@ -1,5 +1,7 @@
 # skills
 
+[![skills.sh](https://skills.sh/b/AnoopLamba/skills)](https://skills.sh/AnoopLamba/skills)
+
 Reusable Agent Skills by Anoop Lamba.
 
 ## Available skills
