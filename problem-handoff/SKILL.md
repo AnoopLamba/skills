@@ -245,6 +245,19 @@ Never silently promote **Unknown → Inferred → Verified** because a previous 
 
 Statements from another model or agent are not evidence by themselves.
 
+### Separate current behavior from requirements and invariants
+
+Do not mix what the system **currently does** with what the system **must continue to do**.
+
+When both matter, use separate sections or labels such as:
+
+- **Verified current behavior** — behavior directly observed or confirmed in the present implementation.
+- **Requirements / invariants** — product, safety, architectural, operational, or policy rules that a valid solution must preserve, whether or not the current implementation fully enforces them.
+
+For example, do not place "Human approval is required before publication" under verified implementation behavior unless that enforcement has actually been confirmed. If it is a project rule that must remain true, place it under requirements/invariants instead.
+
+This distinction prevents the next investigator from confusing "already implemented" with "required outcome."
+
 ## 4. Preserve contradictory evidence
 
 Do not selectively include only evidence supporting the current investigator's theory.
@@ -312,7 +325,23 @@ Include:
 - changed dependencies;
 - whether the current state differs from the state where the issue originally occurred.
 
-This prevents the recipient from unknowingly investigating a modified system.
+### Distinguish historical results from newer implementation paths
+
+When a newer helper, migration, fallback, experiment, or implementation path exists, explicitly state whether the concrete reproduction case has actually been rerun against it.
+
+Do not leave readers to infer that an older failure still represents current behavior, or that a newer path has solved the problem merely because it exists.
+
+Prefer statements such as:
+
+> A transcript helper was added after this draft was created. The affected videos have not yet been rerun through that helper, so the statuses below reflect the earlier retrieval attempt.
+
+or:
+
+> The affected case was rerun against the newer path on [date/version], producing the following results: ...
+
+If whether the case has been rerun is unknown, say so explicitly.
+
+This prevents historical evidence and current implementation state from being conflated.
 
 ## 8. Preserve constraints and invariants
 
@@ -363,10 +392,10 @@ A typical technical investigation handoff may contain:
 - Evidence
 - Relevant System Context
 - Relevant Code / Components
-- Verified Observations
+- Verified Current Behavior
 - Experiments Already Performed
 - Current State
-- Constraints / Invariants
+- Requirements / Constraints / Invariants
 - Unknowns
 - Investigation Request
 
@@ -377,6 +406,7 @@ An architecture investigation may instead use:
 - Observed Limitations
 - Evidence
 - Relevant Components
+- Verified Current Behavior
 - Existing Constraints
 - Previous Experiments
 - Unknowns
@@ -476,6 +506,28 @@ Better:
 
 > During the recorded reproduction attempt, the Flipkart URL returned HTTP 403 through the current retrieval path.
 
+### Current behavior mixed with policy
+
+Bad:
+
+> Verified behavior: Products require human approval before publication.
+
+If only the rule is known, better:
+
+> Requirement / invariant: Products must not be published without human approval.
+
+Only describe it as verified current behavior when implementation enforcement has been directly confirmed.
+
+### New path existence treated as proof
+
+Bad:
+
+> YouTube retrieval is fixed because a transcript helper now exists.
+
+Better:
+
+> A transcript helper now exists. Whether the affected reproduction case succeeds through that newer path has not yet been verified.
+
 ### Previous-agent authority
 
 Bad:
@@ -532,10 +584,12 @@ Before returning the handoff, verify:
 - Is observed behavior separated from interpretation?
 - Are important claims supported by evidence?
 - Are verified facts distinguishable from inference?
+- Are verified current behaviors separated from requirements/policies/invariants?
 - Are useful previous experiments preserved?
 - Is contradictory evidence retained?
 - Are constraints actual constraints rather than preferred solutions?
 - Is current repository/environment state clear when relevant?
+- If a newer implementation path exists, is it clear whether the concrete case has actually been rerun against it?
 - Is the concrete reproduction case preserved with enough detail to be useful?
 - Are exact errors, status codes, source-by-source outcomes, IDs, inputs, or measurements retained when they materially affect investigation?
 - Are verified implementation behaviors preserved when omitting them could cause the recipient to recommend behavior that already exists?
